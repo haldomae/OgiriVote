@@ -1,0 +1,14 @@
+rules_version = '2';
+
+// 参加者の写真: 誰でも閲覧可(投票ページ表示用)。
+// アップロード/削除は認証済み管理者のみ(firestore.rules と同じ方針)。
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /participant-photos/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+  }
+}

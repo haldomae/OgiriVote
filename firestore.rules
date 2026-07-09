@@ -1,0 +1,42 @@
+rules_version = '2';
+
+// 設計方針(CLAUDE.md 7章を踏まえた実装判断):
+// - 投票ページは認証なし(匿名アクセス)で turns/{turnId} の votes / revoteVotes
+//   フィールドのみインクリメント可能。個々のキーが+1されているかまでの厳密な検証は
+//   学内イベント規模のため行わない(最低限、他フィールドの書き換えのみ拒否する)。
+// - 管理者操作(大会/参加者/ターンの管理)は Firebase Authentication でログインした
+//   ユーザーのみ許可する。管理者アカウントは Firebase Console で事前作成する運用とし、
+//   アプリ側にサインアップ機能は用意しない。
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null;
+    }
+
+    function onlyKeysChanged(keys) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+    }
+
+    match /tournament/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /participants/{participantId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /turns/{turnId} {
+      allow read: if true;
+      allow create, delete: if isAdmin();
+
+      // 投票ページ: votes または revoteVotes のみを書き換える更新を許可
+      // 管理者: 認証済みであれば全フィールドの更新を許可
+      allow update: if isAdmin()
+        || onlyKeysChanged(['votes'])
+        || onlyKeysChanged(['revoteVotes']);
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "projects": {
+    "default": "ogirivote-86481"
+  },
+  "targets": {
+    "ogirivote-86481": {
+      "hosting": {
+        "vote": [
+          "ogirivote-86481"
+        ],
+        "admin": [
+          "ogirivote-86481-admin"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker compose *)",
+      "Bash(docker exec *)",
+      "Skill(run)",
+      "Skill(run:*)",
+      "Bash(curl -sf http://localhost:5173/preview.html)",
+      "Bash(powershell -Command 'Add-Type -AssemblyName System.Drawing; $img = [System.Drawing.Image]::FromFile\\('\\\\''C:\\\\Users\\\\WTHKYO~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Project-Ather-OgiriVote\\\\b0950c74-0fe7-418d-b4e3-18ee21679fe5\\\\scratchpad\\\\vote-preview2.png'\\\\''\\); Write-Host $img.Width x $img.Height')",
+      "Bash(powershell -Command 'Add-Type -AssemblyName System.Drawing; $img = [System.Drawing.Image]::FromFile\\('\\\\''C:\\\\Users\\\\WTHKYO~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Project-Ather-OgiriVote\\\\b0950c74-0fe7-418d-b4e3-18ee21679fe5\\\\scratchpad\\\\vote-debug.png'\\\\''\\); Write-Host $img.Width x $img.Height')",
+      "Bash(powershell -Command \"Get-Process chrome -ErrorAction SilentlyContinue | Select-Object Id,MainWindowTitle | Format-Table -AutoSize\")",
+      "Bash(break)",
+      "Bash(curl -v http://localhost:5173/preview.html)",
+      "Bash(rm \"c:/Project/Ather/OgiriVote/vote-app/public/preview.html\")",
+      "Bash(rmdir \"c:/Project/Ather/OgiriVote/vote-app/public\")",
+      "Bash(curl -s -o /dev/null -w \"vote: %{http_code}\\\\n\" https://ogirivote-86481.web.app)",
+      "Bash(curl -s -o /dev/null -w \"admin: %{http_code}\\\\n\" https://ogirivote-86481-admin.web.app)",
+      "Bash(rm -rf vote-app/dist vote-app/tsconfig.tsbuildinfo)"
+    ]
+  }
+}
