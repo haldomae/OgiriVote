@@ -3,6 +3,7 @@ export type TournamentStatus = "not_started" | "in_progress" | "finished";
 export interface TournamentState {
   status: TournamentStatus;
   currentTurnId: string | null;
+  surveyOpen?: boolean;
 }
 
 export type TurnStatus = "pending" | "accepting" | "closed";
@@ -21,7 +22,16 @@ export interface Turn {
 
 export interface Participant {
   name: string;
-  eliminated: boolean;
   order: number;
   photoUrl: string | null;
+}
+
+export type SurveyQuestionType = "choice" | "text";
+
+export interface SurveyQuestion {
+  id: string;
+  order: number;
+  type: SurveyQuestionType;
+  question: string;
+  choices?: string[];
 }

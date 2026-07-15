@@ -6,6 +6,8 @@ import { ParticipantEditor } from "../components/ParticipantEditor";
 import { TurnControl } from "../components/TurnControl";
 import { RevoteControl } from "../components/RevoteControl";
 import { ResultsView } from "../components/ResultsView";
+import { SurveyEditor } from "../components/SurveyEditor";
+import { SurveyResults } from "../components/SurveyResults";
 
 export function AdminPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -47,6 +49,11 @@ export function AdminPage() {
 
       <RevoteControl />
       <ResultsView />
+
+      <div className="admin-grid">
+        <SurveyEditor />
+        <SurveyResults />
+      </div>
     </div>
   );
 }

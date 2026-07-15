@@ -139,7 +139,7 @@ export function TurnControl() {
     setEditingTurnId(null);
   };
 
-  const participantName = (id: string) => participants.find((p) => p.id === id)?.name ?? id;
+  const participantName = (id: string) => participants.find((p) => p.id === id)?.name ?? "不明な参加者";
 
   return (
     <div className="panel">
@@ -148,14 +148,12 @@ export function TurnControl() {
       <form onSubmit={createTurn} className="turn-create-form">
         <p style={{ margin: 0, fontSize: 14, color: "var(--text-secondary)" }}>第{nextTurnNumber}ターンを作成</p>
         <div className="checkbox-grid">
-          {participants
-            .filter((p) => !p.eliminated)
-            .map((p) => (
-              <label key={p.id}>
-                <input type="checkbox" checked={selectedIds.includes(p.id)} onChange={() => toggleSelected(p.id)} />{" "}
-                {p.name}
-              </label>
-            ))}
+          {participants.map((p) => (
+            <label key={p.id}>
+              <input type="checkbox" checked={selectedIds.includes(p.id)} onChange={() => toggleSelected(p.id)} />{" "}
+              {p.name}
+            </label>
+          ))}
         </div>
         <button type="submit">ターンを作成</button>
       </form>
@@ -179,18 +177,16 @@ export function TurnControl() {
             {editingTurnId === turn.id ? (
               <div className="turn-edit-form">
                 <div className="checkbox-grid">
-                  {participants
-                    .filter((p) => !p.eliminated || turn.participantIds.includes(p.id))
-                    .map((p) => (
-                      <label key={p.id}>
-                        <input
-                          type="checkbox"
-                          checked={editSelectedIds.includes(p.id)}
-                          onChange={() => toggleEditSelected(p.id)}
-                        />{" "}
-                        {p.name}
-                      </label>
-                    ))}
+                  {participants.map((p) => (
+                    <label key={p.id}>
+                      <input
+                        type="checkbox"
+                        checked={editSelectedIds.includes(p.id)}
+                        onChange={() => toggleEditSelected(p.id)}
+                      />{" "}
+                      {p.name}
+                    </label>
+                  ))}
                 </div>
                 <div className="row-actions">
                   <button onClick={() => void saveEdit(turn)}>保存</button>

@@ -26,7 +26,7 @@ export function ResultsView() {
     });
   }, []);
 
-  const participantName = (id: string) => participants.find((p) => p.id === id)?.name ?? id;
+  const participantName = (id: string) => participants.find((p) => p.id === id)?.name ?? "不明な参加者";
 
   return (
     <div className="panel results-view">

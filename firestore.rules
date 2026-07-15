@@ -38,5 +38,19 @@ service cloud.firestore {
         || onlyKeysChanged(['votes'])
         || onlyKeysChanged(['revoteVotes']);
     }
+
+    // アンケート設問: 投票ページからは読み取りのみ、登録/編集/削除は管理者のみ
+    match /surveyQuestions/{questionId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // アンケート回答: 匿名の投票ページから新規作成のみ許可(改ざん防止のため更新は不可)。
+    // 閲覧・削除(結果リセット)は管理者のみ
+    match /surveyResponses/{responseId} {
+      allow create: if true;
+      allow read, delete: if isAdmin();
+      allow update: if false;
+    }
   }
 }

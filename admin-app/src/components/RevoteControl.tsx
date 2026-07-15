@@ -25,7 +25,7 @@ export function RevoteControl() {
     };
   }, []);
 
-  const participantName = (id: string) => participants.find((p) => p.id === id)?.name ?? id;
+  const participantName = (id: string) => participants.find((p) => p.id === id)?.name ?? "不明な参加者";
 
   const tiedTurns: TiedTurn[] = turns
     .filter((t) => t.status === "closed" && !t.winnerId)

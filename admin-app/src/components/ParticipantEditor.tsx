@@ -31,7 +31,7 @@ export function ParticipantEditor() {
     const name = newName.trim();
     if (!name) return;
     const nextOrder = participants.length ? Math.max(...participants.map((p) => p.order)) + 1 : 1;
-    const docRef = await addDoc(participantsCollection(), { name, eliminated: false, order: nextOrder, photoUrl: null });
+    const docRef = await addDoc(participantsCollection(), { name, order: nextOrder, photoUrl: null });
     if (newPhoto) {
       setUploadingId(docRef.id);
       const photoUrl = await uploadParticipantPhoto(docRef.id, newPhoto);
@@ -42,8 +42,6 @@ export function ParticipantEditor() {
     setNewPhoto(null);
     if (newPhotoInputRef.current) newPhotoInputRef.current.value = "";
   };
-
-  const toggleEliminated = (p: Participant) => updateDoc(participantDoc(p.id), { eliminated: !p.eliminated });
 
   const rename = (p: Participant) => {
     const name = window.prompt("参加者名を編集", p.name);
@@ -80,14 +78,14 @@ export function ParticipantEditor() {
       </form>
       <ul className="participant-editor-list">
         {participants.map((p) => (
-          <li key={p.id} className={p.eliminated ? "eliminated" : ""}>
+          <li key={p.id}>
             <span className="participant-info">
               {p.photoUrl ? (
                 <img className="participant-thumb" src={p.photoUrl} alt={p.name} />
               ) : (
                 <span className="participant-thumb participant-thumb-empty" />
               )}
-              {p.order}. {p.name}
+              {p.name}
               {uploadingId === p.id && " (アップロード中...)"}
             </span>
             <span className="row-actions">
@@ -114,9 +112,6 @@ export function ParticipantEditor() {
                   e.target.value = "";
                 }}
               />
-              <button className="secondary" onClick={() => void toggleEliminated(p)}>
-                {p.eliminated ? "復活" : "敗退にする"}
-              </button>
               <button className="secondary" onClick={() => remove(p)}>
                 削除
               </button>

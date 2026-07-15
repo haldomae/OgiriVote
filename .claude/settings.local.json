@@ -15,7 +15,10 @@
       "Bash(rmdir \"c:/Project/Ather/OgiriVote/vote-app/public\")",
       "Bash(curl -s -o /dev/null -w \"vote: %{http_code}\\\\n\" https://ogirivote-86481.web.app)",
       "Bash(curl -s -o /dev/null -w \"admin: %{http_code}\\\\n\" https://ogirivote-86481-admin.web.app)",
-      "Bash(rm -rf vote-app/dist vote-app/tsconfig.tsbuildinfo)"
+      "Bash(rm -rf vote-app/dist vote-app/tsconfig.tsbuildinfo)",
+      "Bash(rm -rf vote-app/dist admin-app/dist vote-app/tsconfig.tsbuildinfo admin-app/tsconfig.tsbuildinfo)",
+      "Bash(curl -s \"https://firestore.googleapis.com/v1/projects/ogirivote-86481/databases/\\(default\\)/documents/tournament/state\")",
+      "Bash(curl -s https://ogirivote-86481.web.app -o /dev/null -w \"vote page: %{http_code}\\\\n\")"
     ]
   }
 }

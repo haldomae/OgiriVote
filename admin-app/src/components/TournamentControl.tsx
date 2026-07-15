@@ -30,6 +30,9 @@ export function TournamentControl() {
 
   const finishTournament = () => updateDoc(tournamentStateDoc(), { status: "finished", currentTurnId: null });
 
+  const openSurvey = () => updateDoc(tournamentStateDoc(), { surveyOpen: true });
+  const closeSurvey = () => updateDoc(tournamentStateDoc(), { surveyOpen: false });
+
   return (
     <div className="panel">
       <h2>大会全体の制御</h2>
@@ -44,6 +47,21 @@ export function TournamentControl() {
           disabled={!tournament || tournament.status === "finished"}
         >
           大会終了
+        </button>
+      </div>
+
+      <p style={{ marginTop: 16, fontSize: 14, color: "var(--text-secondary)" }}>
+        アンケート配信: {tournament?.surveyOpen ? "配信中" : "停止中"}
+      </p>
+      <div className="row-actions">
+        <button
+          onClick={() => void openSurvey()}
+          disabled={tournament?.status !== "finished" || !!tournament?.surveyOpen}
+        >
+          アンケートを送信
+        </button>
+        <button className="secondary" onClick={() => void closeSurvey()} disabled={!tournament?.surveyOpen}>
+          アンケートを終了
         </button>
       </div>
     </div>

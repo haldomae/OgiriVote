@@ -1,21 +1,37 @@
-import { doc, getDoc, onSnapshot, type Unsubscribe } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  onSnapshot,
+  orderBy,
+  query,
+  type Unsubscribe,
+} from "firebase/firestore";
 import { db } from "./firebase";
-import type { Participant, TournamentState, Turn } from "./types";
+import type { Participant, SurveyQuestion, TournamentState, Turn } from "./types";
 import { renderLoading, renderMessage } from "./pages/status";
 import { renderCompletePage } from "./pages/complete";
 import { renderVotePage, type ParticipantInfo } from "./pages/vote";
+import { renderSurveyPage } from "./pages/survey";
 
 const root = document.getElementById("app")!;
 const NETWORK_ERROR_MESSAGE = "通信エラーが発生しました。ページを再読み込みしてください。";
 const WAITING_MESSAGE = "まもなく投票が始まります。";
+const NOT_STARTED_MESSAGE = "まもなく開始します。";
 const FINISHED_MESSAGE = "大会は終了しました。ご参加ありがとうございました。";
 const CLOSED_MESSAGE = "このターンの投票は終了しました。";
+const SURVEY_DONE_MESSAGE = "ご回答ありがとうございました。";
 
 let unsubscribeTurn: Unsubscribe | null = null;
 let currentTurnId: string | null = null;
 let lastTurnSignature: string | null = null;
 let votedRoundKey: string | null = null;
 let renderToken = 0;
+
+// アンケート/待機/終了などターン以外の画面の重複再描画を防ぐための署名
+let lastTerminalSignature: string | null = null;
+let surveyDone = false;
 
 function switchTurnListener(turnId: string | null): void {
   if (turnId === currentTurnId) return;
@@ -98,13 +114,60 @@ async function fetchParticipantInfo(ids: string[]): Promise<Map<string, Particip
   }
 }
 
-function handleTournamentSnapshot(tournament: TournamentState | null): void {
-  if (!tournament || tournament.status !== "in_progress" || !tournament.currentTurnId) {
-    switchTurnListener(null);
-    renderMessage(root, tournament?.status === "finished" ? FINISHED_MESSAGE : WAITING_MESSAGE);
+async function fetchSurveyQuestions(): Promise<SurveyQuestion[] | "error"> {
+  try {
+    const snap = await getDocs(query(collection(db, "surveyQuestions"), orderBy("order")));
+    return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<SurveyQuestion, "id">) }));
+  } catch {
+    return "error";
+  }
+}
+
+async function renderSurvey(): Promise<void> {
+  const token = ++renderToken;
+  renderLoading(root);
+  const questions = await fetchSurveyQuestions();
+  if (token !== renderToken) return;
+
+  if (questions === "error") {
+    renderMessage(root, NETWORK_ERROR_MESSAGE);
     return;
   }
-  switchTurnListener(tournament.currentTurnId);
+  if (questions.length === 0) {
+    renderMessage(root, FINISHED_MESSAGE);
+    return;
+  }
+  renderSurveyPage(root, db, questions, () => {
+    surveyDone = true;
+  });
+}
+
+function handleTournamentSnapshot(tournament: TournamentState | null): void {
+  if (tournament && tournament.status === "in_progress" && tournament.currentTurnId) {
+    lastTerminalSignature = null;
+    switchTurnListener(tournament.currentTurnId);
+    return;
+  }
+
+  switchTurnListener(null);
+
+  if (tournament && tournament.status === "finished" && tournament.surveyOpen) {
+    if (surveyDone) {
+      if (lastTerminalSignature === "survey-done") return;
+      lastTerminalSignature = "survey-done";
+      renderMessage(root, SURVEY_DONE_MESSAGE);
+      return;
+    }
+    if (lastTerminalSignature === "survey") return;
+    lastTerminalSignature = "survey";
+    void renderSurvey();
+    return;
+  }
+
+  const signature = tournament?.status === "finished" ? "finished" : "not_started";
+  if (signature === lastTerminalSignature) return;
+  lastTerminalSignature = signature;
+  renderMessage(root, tournament?.status === "finished" ? FINISHED_MESSAGE : NOT_STARTED_MESSAGE);
 }
 
 function main(): void {

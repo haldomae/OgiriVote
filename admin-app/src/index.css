@@ -219,11 +219,6 @@ button.secondary {
   flex-wrap: wrap;
 }
 
-.participant-editor-list li.eliminated {
-  opacity: 0.5;
-  text-decoration: line-through;
-}
-
 .turn-list li.current-turn {
   border-color: var(--series-1);
 }
@@ -250,6 +245,26 @@ button.secondary {
   border-bottom: 1px solid var(--gridline);
   padding-bottom: 16px;
   margin-bottom: 16px;
+}
+
+.turn-create-form input,
+.turn-create-form select,
+.turn-create-form textarea,
+.turn-edit-form input,
+.turn-edit-form select,
+.turn-edit-form textarea {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font: inherit;
+  background: var(--surface-1);
+  color: var(--text-primary);
+}
+
+.turn-create-form textarea,
+.turn-edit-form textarea {
+  min-height: 64px;
+  resize: vertical;
 }
 
 .checkbox-grid {
